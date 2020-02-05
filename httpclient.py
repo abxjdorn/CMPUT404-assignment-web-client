@@ -36,8 +36,9 @@ class HTTPResponse(object):
 
 
 class HTTPClient(object):
-    def get_host_port(self,url):
-        pass
+    def get_host_port(self, url):
+        hostname, port, path = self._decompose_url(url)
+        return self._lookup_host(hostname), port
 
 
     def connect(self, host, port):
@@ -95,17 +96,36 @@ class HTTPClient(object):
 
 
     def _request(self, method, url, args):
-        encoded_request = self._encode_request(method, url, args)
+        hostname, port, path = self._decompose_url(url)
+
+        host = self._lookup_host(hostname)
+        print('Connecting to {}:{} ({}:{})'.format(hostname, port, host, port))
+        raise NotImplementedError()
+        #self.connect(hostname, port)
+
+        encoded_request = self._encode_request(method, hostname, path, args)
         self.sendall(encoded_request)
         response = self.recvall(self.socket)
 
         print(response)
 
 
-    def _encode_request(self, method, url, args):
-        hostname, escaped_path = self._decompose_url(url)
+    def _decompose_url(self, url):
+        if not url.startswith('http://'):
+            url = 'http://' + url
+
+        parts = urllib.parse.urlparse(url)
+        print(parts)
+        return parts.hostname, parts.port, parts.netloc
+
+    
+    def _lookup_host(self, hostname):
+        return socket.gethostbyname(hostname)
+
+
+    def _encode_request(self, method, hostname, path, args):
         request_lines = [
-                '{} {} HTTP/1.1'.format(method, escaped_path),
+                '{} {} HTTP/1.1'.format(method, path),
                 'Host: {}'.format(hostname),
                 'Connection: close',
                 'Accept: */*',
