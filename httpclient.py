@@ -25,6 +25,14 @@ import re
 import urllib.parse
 
 
+DIAGNOSTIC = True
+
+
+def dp(*args):
+    if DIAGNOSTIC:
+        print(*args)
+
+
 def help():
     print("httpclient.py [GET/POST] [URL]\n")
 
@@ -33,6 +41,16 @@ class HTTPResponse(object):
     def __init__(self, code=200, body=""):
         self.code = code
         self.body = body
+
+
+    def __str__(self):
+        if DIAGNOSTIC:
+            return (
+                    '= = = Status {} = = ='.format(self.code) + '\n' +
+                    self.body
+                )
+        else:
+            return self.body
 
 
 class HTTPClient(object):
@@ -96,10 +114,13 @@ class HTTPClient(object):
 
 
     def _request(self, method, url, args):
+        print('URL: {}'.format(url))
+        print('Args: {}'.format(args))
+
         hostname, port, path = self._decompose_url(url)
 
         host = self._lookup_host(hostname)
-        print('Connecting to {}:{} ({}:{})'.format(hostname, port, host, port))
+        dp('Connecting to {}:{} ({}:{})'.format(hostname, port, host, port))
         self.connect(hostname, port)
 
         encoded_request = self._encode_request(method, hostname, path, args)
@@ -107,7 +128,16 @@ class HTTPClient(object):
         self.socket.shutdown(socket.SHUT_WR)
         response = self.recvall(self.socket)
 
-        print(response)
+        respline, headers, body = self._split_response(response)
+
+        code = int(respline.split(' ')[1])
+        return HTTPResponse(code, body)
+
+
+    def _split_response(self, response):
+        respline, rest = response.split('\r\n', 1)
+        headers, body = rest.split('\r\n\r\n', 1)
+        return respline, headers, body
 
 
     def _decompose_url(self, url):
@@ -115,7 +145,6 @@ class HTTPClient(object):
             url = 'http://' + url
 
         parts = urllib.parse.urlparse(url)
-        print(parts)
         return parts.hostname, parts.port, parts.path
 
 
@@ -141,6 +170,8 @@ class HTTPClient(object):
         request_data = '\r\n'.join(request_lines) + '\r\n'
         if args:
             request_data += '\r\n' + encoded_args
+
+        print(request_data)
 
         return request_data
 
