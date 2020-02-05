@@ -127,6 +127,7 @@ class HTTPClient(object):
         self.sendall(encoded_request)
         self.socket.shutdown(socket.SHUT_WR)
         response = self.recvall(self.socket)
+        self.close()
 
         respline, headers, body = self._split_response(response)
 
@@ -174,6 +175,17 @@ class HTTPClient(object):
         print(request_data)
 
         return request_data
+
+
+    def _encode_args(self, args):
+        # This implements application/x-www-form-urlencoded encoding
+        # approximately as per the description at
+        # https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST
+        return ('&'.join(map(lambda k:
+                    urllib.parse.quote(k) + '='
+                    + urllib.parse.quote(args[k]),
+                args.keys()
+            )))
 
 
 if __name__ == "__main__":
