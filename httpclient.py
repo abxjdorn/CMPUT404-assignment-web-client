@@ -100,11 +100,11 @@ class HTTPClient(object):
 
         host = self._lookup_host(hostname)
         print('Connecting to {}:{} ({}:{})'.format(hostname, port, host, port))
-        raise NotImplementedError()
-        #self.connect(hostname, port)
+        self.connect(hostname, port)
 
         encoded_request = self._encode_request(method, hostname, path, args)
         self.sendall(encoded_request)
+        self.socket.shutdown(socket.SHUT_WR)
         response = self.recvall(self.socket)
 
         print(response)
@@ -116,9 +116,9 @@ class HTTPClient(object):
 
         parts = urllib.parse.urlparse(url)
         print(parts)
-        return parts.hostname, parts.port, parts.netloc
+        return parts.hostname, parts.port, parts.path
 
-    
+
     def _lookup_host(self, hostname):
         return socket.gethostbyname(hostname)
 
@@ -138,9 +138,11 @@ class HTTPClient(object):
                     'Content-Type: application/x-www-form-urlencoded',
                 ])
 
-        request_data = bytes('\r\n'.join(request_lines), encoding='ascii')
+        request_data = '\r\n'.join(request_lines) + '\r\n'
         if args:
-            request_data += b'\r\n\r\n' + encoded_args
+            request_data += '\r\n' + encoded_args
+
+        return request_data
 
 
 if __name__ == "__main__":
