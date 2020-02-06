@@ -152,7 +152,7 @@ class HTTPClient(object):
             ]
 
         if args is not None:
-            encoded_args = self._encode_args(args)
+            encoded_args = urllib.parse.urlencode(args)
             request_lines.extend([
                     'Content-Length: {}'.format(len(encoded_args)),
                     'Content-Type: application/x-www-form-urlencoded',
@@ -165,17 +165,6 @@ class HTTPClient(object):
         print(bytes(request_data, encoding='utf-8'))
 
         return request_data
-
-
-    def _encode_args(self, args):
-        # This implements application/x-www-form-urlencoded encoding
-        # approximately as per the description at
-        # https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST
-        return ('&'.join(map(lambda k:
-                    urllib.parse.quote_plus(k) + '='
-                    + urllib.parse.quote_plus(args[k]),
-                args.keys()
-            )))
 
 
 if __name__ == "__main__":
