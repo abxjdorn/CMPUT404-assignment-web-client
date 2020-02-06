@@ -28,7 +28,7 @@ import re
 import urllib.parse
 
 
-DIAGNOSTIC = True
+DIAGNOSTIC = False
 
 
 def dp(*args):
