@@ -132,7 +132,10 @@ class HTTPClient(object):
             url = 'http://' + url
 
         parts = urllib.parse.urlparse(url)
-        return parts.hostname, parts.port, parts.path
+
+        port = 80 if parts.port is None else parts.port
+        path = parts.path or '/'
+        return parts.hostname, port, path
 
 
     def _lookup_host(self, hostname):
@@ -154,11 +157,11 @@ class HTTPClient(object):
                     'Content-Type: application/x-www-form-urlencoded',
                 ])
 
-        request_data = '\r\n'.join(request_lines) + '\r\n'
+        request_data = '\r\n'.join(request_lines) + '\r\n\r\n'
         if args:
-            request_data += '\r\n' + encoded_args
+            request_data +=  encoded_args
 
-        print(request_data)
+        print(bytes(request_data, encoding='utf-8'))
 
         return request_data
 
