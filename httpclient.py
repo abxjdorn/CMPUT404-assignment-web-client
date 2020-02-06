@@ -172,8 +172,8 @@ class HTTPClient(object):
         # approximately as per the description at
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST
         return ('&'.join(map(lambda k:
-                    urllib.parse.quote(k) + '='
-                    + urllib.parse.quote(args[k]),
+                    urllib.parse.quote_plus(k) + '='
+                    + urllib.parse.quote_plus(args[k]),
                 args.keys()
             )))
 
