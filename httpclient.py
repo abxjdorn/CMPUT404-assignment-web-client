@@ -135,6 +135,7 @@ class HTTPClient(object):
 
         port = 80 if parts.port is None else parts.port
         path = parts.path or '/'
+        if parts.query: path += '?' + parts.query
         return parts.hostname, port, path
 
 
