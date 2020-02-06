@@ -18,6 +18,9 @@
 # Write your own HTTP GET and POST
 # The point is to understand what you have to send and get experience with it
 
+# This implements concepts from the HTTP 1.1 specification
+# RFC 2616 (https://www.ietf.org/rfc/rfc2616.txt)
+
 import sys
 import socket
 import re
@@ -54,26 +57,9 @@ class HTTPResponse(object):
 
 
 class HTTPClient(object):
-    def get_host_port(self, url):
-        hostname, port, path = self._decompose_url(url)
-        return self._lookup_host(hostname), port
-
-
     def connect(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
-        return None
-
-
-    def get_code(self, data):
-        return None
-
-
-    def get_headers(self, data):
-        return None
-
-
-    def get_body(self, data):
         return None
 
 
