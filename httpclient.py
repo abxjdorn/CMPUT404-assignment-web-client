@@ -100,8 +100,8 @@ class HTTPClient(object):
 
 
     def _request(self, method, url, args):
-        print('URL: {}'.format(url))
-        print('Args: {}'.format(args))
+        dp('URL: {}'.format(url))
+        dp('Args: {}'.format(args))
 
         hostname, port, path = self._decompose_url(url)
 
@@ -162,7 +162,7 @@ class HTTPClient(object):
         if args:
             request_data +=  encoded_args
 
-        print(bytes(request_data, encoding='utf-8'))
+        dp(bytes(request_data, encoding='utf-8'))
 
         return request_data
 
