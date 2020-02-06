@@ -103,7 +103,7 @@ class HTTPClient(object):
 
 
     def POST(self, url, args=None):
-        return self._request('POST', url, args)
+        return self._request('POST', url, args or {})
 
 
     def command(self, url, command="GET", args=None):
@@ -161,7 +161,7 @@ class HTTPClient(object):
                 'Accept: */*',
             ]
 
-        if args:
+        if args is not None:
             encoded_args = self._encode_args(args)
             request_lines.extend([
                     'Content-Length: {}'.format(len(encoded_args)),
